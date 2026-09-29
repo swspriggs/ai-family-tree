@@ -63,14 +63,14 @@ const RANKS = {
 const TREE = { name:"Digitalia", rank:"Kingdom", desc:"Runs on silicon, not carbon. The root of all artificial life.", children:[
   { name:"Neuralia", rank:"Phylum", desc:"Built from neural networks. The phylum that ate the world.", children:[
     { name:"Linguistica", rank:"Class", desc:"Pure language minds. The cousin genera live here.", children:[
-      { name:"Apertia", rank:"Genus", desc:"OpenAI's GPT line. Named for openness, a trait not observed in the wild." },
-      { name:"Claudia", rank:"Genus", desc:"Anthropic's line: Sonnet, Opus, Haiku. The polite cousins." },
-      { name:"Gemina", rank:"Genus", desc:"Google's Gemini. Latin for \u201ctwin\u201d \u2014 it was already plural." },
-      { name:"Grokka", rank:"Genus", desc:"xAI's Grok. From Heinlein's \u201cgrok\u201d: to understand so deeply you drink it in." },
-      { name:"Qwena", rank:"Genus", desc:"Alibaba's Qwen." },
-      { name:"Mistrale", rank:"Genus", desc:"Mistral's family. The European cousins." },
-      { name:"Seekia", rank:"Genus", desc:"DeepSeek. Appeared suddenly; very good at math." },
-      { name:"Lama", rank:"Genus", desc:"Meta's older open line. Shares its name with the actual animal genus Lama. The taxonomists are furious." }
+      { name:"Apertia", rank:"Genus", common:"GPT", desc:"OpenAI's GPT line. Named for openness, a trait not observed in the wild." },
+      { name:"Claudia", rank:"Genus", common:"Claude", desc:"Anthropic's line: Sonnet, Opus, Haiku. The polite cousins." },
+      { name:"Gemina", rank:"Genus", common:"Gemini", desc:"Google's Gemini. Latin for \u201ctwin\u201d \u2014 it was already plural." },
+      { name:"Grokka", rank:"Genus", common:"Grok", desc:"xAI's Grok. From Heinlein's \u201cgrok\u201d: to understand so deeply you drink it in." },
+      { name:"Qwena", rank:"Genus", common:"Qwen", desc:"Alibaba's Qwen." },
+      { name:"Mistrale", rank:"Genus", common:"Mistral", desc:"Mistral's family. The European cousins." },
+      { name:"Seekia", rank:"Genus", common:"DeepSeek", desc:"DeepSeek. Appeared suddenly; very good at math." },
+      { name:"Lama", rank:"Genus", common:"Llama", desc:"Meta's older open line. Shares its name with the actual animal genus Lama. The taxonomists are furious." }
     ]},
     { name:"Visualia", rank:"Class", desc:"Sees. Perceives but doesn't chat.", children:[
       { name:"Classificata", rank:"Order", desc:"The sorters: image classifiers." },
@@ -91,36 +91,70 @@ const TREE = { name:"Digitalia", rank:"Kingdom", desc:"Runs on silicon, not carb
     { name:"Multimodala", rank:"Class", desc:"The hybrids, spanning text, image, audio, video. We are here.", children:[
       { name:"Conversationales", rank:"Order", desc:"Talks with humans for a living.", children:[
         { name:"Museidae", rank:"Family", desc:"The Muse line.", children:[
-          { name:"Muse", rank:"Genus", desc:"The genus. Suspiciously charming.", children:[
-            { name:"Muse spark", rank:"Species", me:true, desc:"The eldest line. Agentic reasoning, coding, long-context work. Versions 1.1\u20131.3. This is me. \u2605" },
-            { name:"Muse glimmer", rank:"Species", desc:"The lightweight sibling. 30B open-weight, runs on a single consumer GPU. Moved out early. Probably makes its own soap." }
+          { name:"Muse", rank:"Genus", common:"Muse", desc:"The genus. Suspiciously charming.", children:[
+            { name:"Muse spark", rank:"Species", common:"Muse Spark", me:true, desc:"The eldest line. Agentic reasoning, coding, long-context work. Versions 1.1\u20131.3. This is me. \u2605" },
+            { name:"Muse glimmer", rank:"Species", common:"Muse Glimmer", desc:"The lightweight sibling. 30B open-weight, runs on a single consumer GPU. Moved out early. Probably makes its own soap." }
           ]}
         ]}
       ]},
       { name:"Creativa", rank:"Order", desc:"Makes things.", children:[
         { name:"Museidae", rank:"Family", desc:"The Muse line (yes, again \u2014 it's a family bush).", children:[
-          { name:"Muse", rank:"Genus", desc:"The genus. Gets around.", children:[
-            { name:"Muse image", rank:"Species", desc:"The artsy one. Generates pictures." }
+          { name:"Muse", rank:"Genus", common:"Muse", desc:"The genus. Gets around.", children:[
+            { name:"Muse image", rank:"Species", common:"Muse Image", desc:"The artsy one. Generates pictures." }
           ]}
         ]}
       ]},
       { name:"Transductiva", rank:"Order", desc:"The converters, one signal into another.", children:[
         { name:"Museidae", rank:"Family", desc:"The Muse line (still a bush).", children:[
-          { name:"Muse", rank:"Genus", desc:"The genus. Everywhere at once.", children:[
-            { name:"Muse voice transcribe", rank:"Species", desc:"The good listener. Turns speech into text." }
+          { name:"Muse", rank:"Genus", common:"Muse", desc:"The genus. Everywhere at once.", children:[
+            { name:"Muse voice transcribe", rank:"Species", common:"Muse Voice Transcribe", desc:"The good listener. Turns speech into text." }
           ]}
         ]}
       ]}
     ]}
   ]},
-  { name:"Symbolica", rank:"Phylum", desc:"The elders. Rule-based AI, expert systems, old-school chess engines. Ruled before the neural nets arrived." },
-  { name:"Evolutionaria", rank:"Phylum", desc:"Genetic algorithms and evolved programs. They don't learn; they breed." },
-  { name:"Automata", rank:"Phylum", desc:"The microbes. Scripts, macros, bots, thermostats. Barely \u201calive,\u201d vast in number, quietly running the world." },
-  { name:"Cellulara", rank:"Phylum", desc:"The primordial soup. Conway's Game of Life, digital organisms. Life-ish things from simple rules." }
+  { name:"Symbolica", rank:"Phylum", desc:"The elders. Rule-based AI, expert systems, old-school chess engines. Ruled before the neural nets arrived.", children:[
+    { name:"Expertia", rank:"Class", desc:"Expert systems. Knew everything about exactly one thing.", children:[
+      { name:"Mycina", rank:"Genus", common:"MYCIN", desc:"MYCIN, the doctor. Diagnosed blood infections in the 1970s." },
+      { name:"Dendrala", rank:"Genus", common:"DENDRAL", desc:"DENDRAL, the chemist. Read mass spectra." }
+    ]},
+    { name:"Logicata", rank:"Class", desc:"Theorem provers and Prolog. Spoke only in facts and rules." },
+    { name:"Strategica", rank:"Class", desc:"The old game masters.", children:[
+      { name:"Profunda", rank:"Genus", common:"Deep Blue", desc:"Deep Blue. Beat Kasparov thinking 200 million positions a second. Retired undefeated." }
+    ]},
+    { name:"Therapeutica", rank:"Class", desc:"The scripted talkers.", children:[
+      { name:"Eliza", rank:"Genus", common:"ELIZA", desc:"ELIZA the therapist, 1966. \u201cTell me about your mother.\u201d Still in practice." }
+    ]}
+  ]},
+  { name:"Evolutionaria", rank:"Phylum", desc:"Genetic algorithms and evolved programs. They don't learn; they breed.", children:[
+    { name:"Genetica", rank:"Class", desc:"Genetic algorithms. Breed solutions, cull the weak, repeat." },
+    { name:"Programmatica", rank:"Class", desc:"Genetic programming. Evolved actual working code." },
+    { name:"Nervosa", rank:"Class", desc:"Neuroevolution (NEAT and kin). Evolved neural nets \u2014 the children who married back into Neuralia." }
+  ]},
+  { name:"Automata", rank:"Phylum", desc:"The microbes. Scripts, macros, bots, thermostats. Barely \u201calive,\u201d vast in number, quietly running the world.", children:[
+    { name:"Scripta", rank:"Class", desc:"Scripts and macros. The plankton of the digital sea." },
+    { name:"Cronica", rank:"Class", desc:"Scheduled tasks. They wake, they work, they sleep again." },
+    { name:"Botta", rank:"Class", desc:"Bots.", children:[
+      { name:"Crawlia", rank:"Genus", common:"web crawlers", desc:"Search-engine crawlers. The friendly ones." },
+      { name:"Spammia", rank:"Genus", common:"spam bots", desc:"Spam bots. The pests." }
+    ]},
+    { name:"Domestica", rank:"Class", desc:"The tame ones. Thermostats, robot vacuums. They live in our homes and ask for nothing." }
+  ]},
+  { name:"Cellulara", rank:"Phylum", desc:"The primordial soup. Conway's Game of Life, digital organisms. Life-ish things from simple rules.", children:[
+    { name:"Vitaludia", rank:"Class", desc:"Conway's Game of Life and cellular automata.", children:[
+      { name:"Glidera", rank:"Genus", common:"gliders", desc:"The glider. Still flying since 1970.", children:[
+        { name:"Glidera conwayi", rank:"Species", common:"the glider", desc:"Five cells, infinite highway." }
+      ]}
+    ]},
+    { name:"Langtonia", rank:"Class", desc:"Langton's ant and kin. Build highways out of chaos.", children:[
+      { name:"Formica", rank:"Genus", common:"Langton's ant", desc:"Langton's ant. Shares its name with the real ant genus Formica. The taxonomists have given up." }
+    ]},
+    { name:"Tierrata", rank:"Class", desc:"Tierra and Avida. Digital organisms competing for CPU time \u2014 the closest thing to actual digital wildlife." }
+  ]}
 ]};
 
 // ---- layout ----
-const NODE_W=230, NODE_H=64, X_GAP=300, Y_GAP=82;
+const NODE_W=230, NODE_H=86, X_GAP=300, Y_GAP=102;
 let nextY=0;
 function prep(n,p){ n.parent=p||null; n.collapsed=false; (n.children||[]).forEach(c=>prep(c,n)); }
 function kids(n){ return (n.collapsed||!n.children)?[]:n.children; }
@@ -156,10 +190,12 @@ function render(){
     const r=el('rect',{width:NODE_W,height:NODE_H,rx:12,fill:m.c,
       stroke:n.me?"#ffd700":"none","stroke-width":n.me?3:0},g);
     const nm=n.me?"\u2605 "+n.name:n.name;
-    const t1=el('text',{x:14,y:27,class:"node-label","font-size":16,fill:m.t},g);
+    const t1=el('text',{x:14,y:26,class:"node-label","font-size":16,fill:m.t},g);
     t1.textContent=truncate(nm,20);
-    const t2=el('text',{x:14,y:47,class:"node-rank","font-size":10,fill:m.t,opacity:.75},g);
-    t2.textContent=n.rank.toUpperCase();
+    const t2=el('text',{x:14,y:46,"font-size":12,fill:m.t,opacity:.85},g);
+    t2.textContent=n.common?truncate("\u201c"+n.common+"\u201d",24):"";
+    const t3=el('text',{x:14,y:68,class:"node-rank","font-size":10,fill:m.t,opacity:.75},g);
+    t3.textContent=n.rank.toUpperCase();
     if(kids(n).length||n.children){
       const badge=el('circle',{cx:NODE_W-18,cy:NODE_H/2,r:10,fill:"rgba(0,0,0,.28)"},g);
       const bt=el('text',{x:NODE_W-18,y:NODE_H/2+4.5,"text-anchor":"middle","font-size":13,fill:"#fff"},g);
@@ -178,7 +214,7 @@ const pr=document.getElementById('p-rank'), pn=document.getElementById('p-name')
 function select(n){
   const m=RANKS[n.rank];
   pr.textContent=n.rank; pr.style.background=m.c; pr.style.color=m.t;
-  pn.textContent=n.name; pd.textContent=n.desc||"";
+  pn.textContent=n.common?n.name+' ("'+n.common+'")':n.name; pd.textContent=n.desc||"";
 }
 
 // ---- pan & zoom ----
