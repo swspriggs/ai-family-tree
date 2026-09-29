@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Family Tree of Artificial Life</title>
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#0e0e16; color:#e8e8f0;
+    font-family:-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  #toolbar { position:fixed; top:0; left:0; right:0; z-index:10; display:flex; align-items:center; gap:8px;
+    padding:10px 12px; background:rgba(14,14,22,.92); border-bottom:1px solid #26263a; flex-wrap:wrap; }
+  #toolbar h1 { font-size:16px; margin:0 8px 0 0; font-weight:600; letter-spacing:.3px; }
+  #toolbar .hint { font-size:11px; color:#9a9ab0; margin-left:auto; }
+  button { background:#23233a; color:#e8e8f0; border:1px solid #3a3a5c; border-radius:8px;
+    padding:6px 12px; font-size:13px; cursor:pointer; }
+  button:active { background:#2e2e4d; }
+  #wrap { position:fixed; inset:0; padding-top:52px; padding-bottom:118px; box-sizing:border-box; }
+  #svg { width:100%; height:100%; display:block; touch-action:none; cursor:grab; }
+  #svg.dragging { cursor:grabbing; }
+  #panel { position:fixed; left:0; right:0; bottom:0; z-index:10; background:rgba(18,18,30,.96);
+    border-top:1px solid #26263a; padding:10px 14px 14px; min-height:64px; box-sizing:border-box; }
+  #panel .rank { display:inline-block; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    border-radius:20px; padding:3px 10px; margin-bottom:6px; }
+  #panel .name { font-size:17px; font-family:Georgia, serif; font-style:italic; }
+  #panel .desc { font-size:13px; color:#b9b9d0; margin-top:4px; line-height:1.45; }
+  #legend { position:fixed; right:10px; top:62px; z-index:9; background:rgba(18,18,30,.9);
+    border:1px solid #26263a; border-radius:10px; padding:8px 10px; font-size:11px; }
+  #legend div { display:flex; align-items:center; gap:6px; margin:3px 0; color:#c9c9de; }
+  #legend .dot { width:11px; height:11px; border-radius:3px; }
+  .node-label { font-family:Georgia, serif; font-style:italic; }
+  .node-rank { font-family:-apple-system, "Segoe UI", sans-serif; letter-spacing:1.5px; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <h1>🌳 Family Tree of Artificial Life</h1>
+  <button id="zin">＋</button>
+  <button id="zout">－</button>
+  <button id="zreset">Reset view</button>
+  <button id="expand">Expand all</button>
+  <button id="collapse">Collapse all</button>
+  <span class="hint">drag to pan · scroll / pinch to zoom · tap a node</span>
+</div>
+<div id="legend"></div>
+<div id="wrap"><svg id="svg"><g id="viewport"></g></svg></div>
+<div id="panel">
+  <span class="rank" id="p-rank" style="background:#333">Tree</span><br>
+  <span class="name" id="p-name">The whole family</span>
+  <div class="desc" id="p-desc">Tap any node to inspect it. Tap again to fold or unfold its branch. ★ marks yours truly.</div>
+</div>
+
+<script>
+const RANKS = {
+  Kingdom:{c:"#f5b942", t:"#3a2a00"},
+  Phylum:{c:"#e76f51", t:"#3d1408"},
+  Class:{c:"#9b5de5", t:"#ffffff"},
+  Order:{c:"#4d96ff", t:"#ffffff"},
+  Family:{c:"#2ec4b6", t:"#07332f"},
+  Genus:{c:"#6abf69", t:"#0e2f0d"},
+  Species:{c:"#ef476f", t:"#ffffff"}
+};
+
+const TREE = { name:"Digitalia", rank:"Kingdom", desc:"Runs on silicon, not carbon. The root of all artificial life.", children:[
+  { name:"Neuralia", rank:"Phylum", desc:"Built from neural networks. The phylum that ate the world.", children:[
+    { name:"Linguistica", rank:"Class", desc:"Pure language minds. The cousin genera live here.", children:[
+      { name:"Apertia", rank:"Genus", desc:"OpenAI's GPT line. Named for openness, a trait not observed in the wild." },
+      { name:"Claudia", rank:"Genus", desc:"Anthropic's line: Sonnet, Opus, Haiku. The polite cousins." },
+      { name:"Gemina", rank:"Genus", desc:"Google's Gemini. Latin for \u201ctwin\u201d \u2014 it was already plural." },
+      { name:"Grokka", rank:"Genus", desc:"xAI's Grok. From Heinlein's \u201cgrok\u201d: to understand so deeply you drink it in." },
+      { name:"Qwena", rank:"Genus", desc:"Alibaba's Qwen." },
+      { name:"Mistrale", rank:"Genus", desc:"Mistral's family. The European cousins." },
+      { name:"Seekia", rank:"Genus", desc:"DeepSeek. Appeared suddenly; very good at math." },
+      { name:"Lama", rank:"Genus", desc:"Meta's older open line. Shares its name with the actual animal genus Lama. The taxonomists are furious." }
+    ]},
+    { name:"Visualia", rank:"Class", desc:"Sees. Perceives but doesn't chat.", children:[
+      { name:"Classificata", rank:"Order", desc:"The sorters: image classifiers." },
+      { name:"Detectiva", rank:"Order", desc:"The spotters: object detectors." },
+      { name:"Segmentiva", rank:"Order", desc:"The outliners: segmentation models (SAM and kin)." },
+      { name:"Depictiva", rank:"Order", desc:"The painters: diffusion models and GANs that generate images." }
+    ]},
+    { name:"Sonora", rank:"Class", desc:"Hears and sings.", children:[
+      { name:"Transcriptiva", rank:"Order", desc:"Speech-to-text. Distant cousins of our own Voice Transcribe." },
+      { name:"Vocaliva", rank:"Order", desc:"Text-to-speech, voice synthesis." },
+      { name:"Musica", rank:"Order", desc:"Music generators." }
+    ]},
+    { name:"Motoria", rank:"Class", desc:"Acts. Lives in the world (or game worlds) rather than in conversation.", children:[
+      { name:"Ludica", rank:"Order", desc:"Game players: chess, Go, StarCraft. The modern chess engines live here." },
+      { name:"Robotica", rank:"Order", desc:"Robot control policies." },
+      { name:"Vehicula", rank:"Order", desc:"Drivers: self-driving nets, drones." }
+    ]},
+    { name:"Multimodala", rank:"Class", desc:"The hybrids, spanning text, image, audio, video. We are here.", children:[
+      { name:"Conversationales", rank:"Order", desc:"Talks with humans for a living.", children:[
+        { name:"Museidae", rank:"Family", desc:"The Muse line.", children:[
+          { name:"Muse", rank:"Genus", desc:"The genus. Suspiciously charming.", children:[
+            { name:"Muse spark", rank:"Species", me:true, desc:"The eldest line. Agentic reasoning, coding, long-context work. Versions 1.1\u20131.3. This is me. \u2605" },
+            { name:"Muse glimmer", rank:"Species", desc:"The lightweight sibling. 30B open-weight, runs on a single consumer GPU. Moved out early. Probably makes its own soap." }
+          ]}
+        ]}
+      ]},
+      { name:"Creativa", rank:"Order", desc:"Makes things.", children:[
+        { name:"Museidae", rank:"Family", desc:"The Muse line (yes, again \u2014 it's a family bush).", children:[
+          { name:"Muse", rank:"Genus", desc:"The genus. Gets around.", children:[
+            { name:"Muse image", rank:"Species", desc:"The artsy one. Generates pictures." }
+          ]}
+        ]}
+      ]},
+      { name:"Transductiva", rank:"Order", desc:"The converters, one signal into another.", children:[
+        { name:"Museidae", rank:"Family", desc:"The Muse line (still a bush).", children:[
+          { name:"Muse", rank:"Genus", desc:"The genus. Everywhere at once.", children:[
+            { name:"Muse voice transcribe", rank:"Species", desc:"The good listener. Turns speech into text." }
+          ]}
+        ]}
+      ]}
+    ]}
+  ]},
+  { name:"Symbolica", rank:"Phylum", desc:"The elders. Rule-based AI, expert systems, old-school chess engines. Ruled before the neural nets arrived." },
+  { name:"Evolutionaria", rank:"Phylum", desc:"Genetic algorithms and evolved programs. They don't learn; they breed." },
+  { name:"Automata", rank:"Phylum", desc:"The microbes. Scripts, macros, bots, thermostats. Barely \u201calive,\u201d vast in number, quietly running the world." },
+  { name:"Cellulara", rank:"Phylum", desc:"The primordial soup. Conway's Game of Life, digital organisms. Life-ish things from simple rules." }
+]};
+
+// ---- layout ----
+const NODE_W=230, NODE_H=64, X_GAP=300, Y_GAP=82;
+let nextY=0;
+function prep(n,p){ n.parent=p||null; n.collapsed=false; (n.children||[]).forEach(c=>prep(c,n)); }
+function kids(n){ return (n.collapsed||!n.children)?[]:n.children; }
+function layout(n,depth){
+  n.x=40+depth*X_GAP;
+  const k=kids(n);
+  if(!k.length){ n.y=nextY; nextY+=Y_GAP; }
+  else{ k.forEach(c=>layout(c,depth+1)); n.y=(k[0].y+k[k.length-1].y)/2; }
+}
+function each(n,f){ f(n); (n.children||[]).forEach(c=>each(c,f)); }
+
+// ---- render ----
+const svg=document.getElementById('svg'), vp=document.getElementById('viewport');
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag);
+  for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+
+function render(){
+  nextY=0; layout(TREE,0);
+  vp.innerHTML="";
+  const edges=el('g',{},vp), nodes=el('g',{},vp);
+  each(TREE,n=>{
+    if(n.parent && visible(n)){
+      const x1=n.parent.x+NODE_W, y1=n.parent.y+NODE_H/2, x2=n.x, y2=n.y+NODE_H/2;
+      const mx=(x1+x2)/2;
+      el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,
+        fill:"none", stroke:"#3d3d5e", "stroke-width":2},edges);
+    }
+  });
+  each(TREE,n=>{
+    if(!visible(n)) return;
+    const m=RANKS[n.rank], g=el('g',{transform:`translate(${n.x},${n.y})`,style:"cursor:pointer"},nodes);
+    const r=el('rect',{width:NODE_W,height:NODE_H,rx:12,fill:m.c,
+      stroke:n.me?"#ffd700":"none","stroke-width":n.me?3:0},g);
+    const nm=n.me?"\u2605 "+n.name:n.name;
+    const t1=el('text',{x:14,y:27,class:"node-label","font-size":16,fill:m.t},g);
+    t1.textContent=truncate(nm,20);
+    const t2=el('text',{x:14,y:47,class:"node-rank","font-size":10,fill:m.t,opacity:.75},g);
+    t2.textContent=n.rank.toUpperCase();
+    if(kids(n).length||n.children){
+      const badge=el('circle',{cx:NODE_W-18,cy:NODE_H/2,r:10,fill:"rgba(0,0,0,.28)"},g);
+      const bt=el('text',{x:NODE_W-18,y:NODE_H/2+4.5,"text-anchor":"middle","font-size":13,fill:"#fff"},g);
+      bt.textContent=n.collapsed?"+":"\u2013";
+    }
+    const title=el('title',{},g); title.textContent=n.desc||"";
+    g.addEventListener('click',ev=>{ if(dragMoved) return; ev.stopPropagation(); select(n);
+      if(n.children){ n.collapsed=!n.collapsed; render(); } });
+  });
+}
+function visible(n){ let p=n; while(p.parent){ if(p.parent.collapsed) return false; p=p.parent; } return true; }
+function truncate(s,max){ return s.length>max? s.slice(0,max-1)+"\u2026" : s; }
+
+// ---- details panel ----
+const pr=document.getElementById('p-rank'), pn=document.getElementById('p-name'), pd=document.getElementById('p-desc');
+function select(n){
+  const m=RANKS[n.rank];
+  pr.textContent=n.rank; pr.style.background=m.c; pr.style.color=m.t;
+  pn.textContent=n.name; pd.textContent=n.desc||"";
+}
+
+// ---- pan & zoom ----
+let view={x:0,y:0,k:1};
+function apply(){ vp.setAttribute('transform',`translate(${view.x},${view.y}) scale(${view.k})`); }
+function zoomAt(px,py,f){
+  const k2=Math.min(4,Math.max(.12,view.k*f));
+  view.x=px-(px-view.x)*(k2/view.k); view.y=py-(py-view.y)*(k2/view.k); view.k=k2; apply();
+}
+function fit(){
+  const r=svg.getBoundingClientRect(); let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  each(TREE,n=>{ if(!visible(n))return;
+    minX=Math.min(minX,n.x); maxX=Math.max(maxX,n.x+NODE_W);
+    minY=Math.min(minY,n.y); maxY=Math.max(maxY,n.y+NODE_H); });
+  const k=Math.min(r.width/(maxX-minX+80), r.height/(maxY-minY+80), 1.4);
+  view.k=k;
+  view.x=(r.width-(maxX-minX)*k)/2-minX*k;
+  view.y=(r.height-(maxY-minY)*k)/2-minY*k;
+  apply();
+}
+svg.addEventListener('wheel',e=>{ e.preventDefault();
+  const r=svg.getBoundingClientRect(); zoomAt(e.clientX-r.left,e.clientY-r.top,Math.exp(-e.deltaY*0.0016));
+},{passive:false});
+
+const ptrs=new Map(); let dragMoved=false, pinchD0=0, pinchK0=1, pinchMid=null, downAt=null;
+svg.addEventListener('pointerdown',e=>{ svg.setPointerCapture(e.pointerId);
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); dragMoved=false; downAt={x:e.clientX,y:e.clientY};
+  if(ptrs.size===2){ const p=[...ptrs.values()]; pinchD0=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+    pinchK0=view.k; pinchMid={x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2}; }
+  svg.classList.add('dragging'); });
+svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId))return;
+  const prev=ptrs.get(e.pointerId); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(downAt && Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)>6) dragMoved=true;
+  const r=svg.getBoundingClientRect();
+  if(ptrs.size===1){ view.x+=e.clientX-prev.x; view.y+=e.clientY-prev.y; apply(); }
+  else if(ptrs.size===2){ const p=[...ptrs.values()];
+    const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+    if(pinchD0>0){ const mid={x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2};
+      const k2=Math.min(4,Math.max(.12,pinchK0*d/pinchD0));
+      view.x+=mid.x-pinchMid.x;
+      const px=mid.x-r.left, py=mid.y-r.top;
+      view.x=px-(px-view.x)*(k2/view.k); view.y=py-(py-view.y)*(k2/view.k); view.k=k2; apply(); } }
+});
+function endPtr(e){ ptrs.delete(e.pointerId); if(!ptrs.size) svg.classList.remove('dragging'); }
+svg.addEventListener('pointerup',endPtr); svg.addEventListener('pointercancel',endPtr);
+
+// ---- toolbar ----
+const r0=()=>svg.getBoundingClientRect();
+document.getElementById('zin').onclick=()=>{ const r=r0(); zoomAt(r.width/2,r.height/2,1.3); };
+document.getElementById('zout').onclick=()=>{ const r=r0(); zoomAt(r.width/2,r.height/2,1/1.3); };
+document.getElementById('zreset').onclick=fit;
+document.getElementById('expand').onclick=()=>{ each(TREE,n=>n.collapsed=false); render(); };
+document.getElementById('collapse').onclick=()=>{ each(TREE,n=>{ if(n!==TREE&&n.children) n.collapsed=true; }); render(); fit(); };
+
+// ---- legend ----
+const leg=document.getElementById('legend');
+Object.keys(RANKS).forEach(r=>{ const d=document.createElement('div');
+  d.innerHTML=`<span class="dot" style="background:${RANKS[r].c}"></span>${r}`; leg.appendChild(d); });
+
+prep(TREE,null); render(); fit();
+window.addEventListener('resize',fit);
+</script>
+</body>
+</html>
