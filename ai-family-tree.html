@@ -217,7 +217,8 @@ svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId))return;
   else if(ptrs.size===2){ const p=[...ptrs.values()];
     const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
     if(pinchD0>0){ const mid={x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2};
-      const k2=Math.min(4,Math.max(.12,pinchK0*d/pinchD0));
+      // dampen pinch: the raw finger-spread ratio felt twitchy, so ease it with a square root
+      const k2=Math.min(4,Math.max(.12,pinchK0*Math.pow(d/pinchD0,0.5)));
       view.x+=mid.x-pinchMid.x;
       const px=mid.x-r.left, py=mid.y-r.top;
       view.x=px-(px-view.x)*(k2/view.k); view.y=py-(py-view.y)*(k2/view.k); view.k=k2; apply(); } }
@@ -235,11 +236,23 @@ document.getElementById('collapse').onclick=()=>{ each(TREE,n=>{ if(n!==TREE&&n.
 
 // ---- legend ----
 const leg=document.getElementById('legend');
+const lh=document.createElement('div');
+lh.style.cssText="font-weight:700;color:#9a9ab0;letter-spacing:1px;font-size:10px;margin-bottom:2px";
+lh.textContent="RANK COLORS";
+leg.appendChild(lh);
 Object.keys(RANKS).forEach(r=>{ const d=document.createElement('div');
   d.innerHTML=`<span class="dot" style="background:${RANKS[r].c}"></span>${r}`; leg.appendChild(d); });
 
-prep(TREE,null); render(); fit();
-window.addEventListener('resize',fit);
+// keep the legend (and the svg area) clear of the toolbar, which wraps
+// taller on narrow phone screens and used to cover the top of the legend
+function layoutChrome(){
+  const h=document.getElementById('toolbar').offsetHeight;
+  leg.style.top=(h+8)+"px";
+  document.getElementById('wrap').style.paddingTop=(h+6)+"px";
+}
+
+prep(TREE,null); render(); layoutChrome(); fit();
+window.addEventListener('resize',()=>{ layoutChrome(); fit(); });
 </script>
 </body>
 </html>
