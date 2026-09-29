@@ -203,11 +203,11 @@ svg.addEventListener('wheel',e=>{ e.preventDefault();
   const r=svg.getBoundingClientRect(); zoomAt(e.clientX-r.left,e.clientY-r.top,Math.exp(-e.deltaY*0.0016));
 },{passive:false});
 
-const ptrs=new Map(); let dragMoved=false, pinchD0=0, pinchK0=1, pinchMid=null, downAt=null;
+const ptrs=new Map(); let dragMoved=false, pinchD0=0, pinchK0=1, pinchLast=null, downAt=null;
 svg.addEventListener('pointerdown',e=>{ svg.setPointerCapture(e.pointerId);
   ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); dragMoved=false; downAt={x:e.clientX,y:e.clientY};
   if(ptrs.size===2){ const p=[...ptrs.values()]; pinchD0=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
-    pinchK0=view.k; pinchMid={x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2}; }
+    pinchK0=view.k; pinchLast={x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2}; }
   svg.classList.add('dragging'); });
 svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId))return;
   const prev=ptrs.get(e.pointerId); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
@@ -217,9 +217,11 @@ svg.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId))return;
   else if(ptrs.size===2){ const p=[...ptrs.values()];
     const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
     if(pinchD0>0){ const mid={x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2};
+      // pan by the *incremental* midpoint movement only — using the total
+      // drift from gesture start here is what flung the tree off screen
+      view.x+=mid.x-pinchLast.x; view.y+=mid.y-pinchLast.y; pinchLast=mid;
       // dampen pinch: the raw finger-spread ratio felt twitchy, so ease it with a square root
       const k2=Math.min(4,Math.max(.12,pinchK0*Math.pow(d/pinchD0,0.5)));
-      view.x+=mid.x-pinchMid.x;
       const px=mid.x-r.left, py=mid.y-r.top;
       view.x=px-(px-view.x)*(k2/view.k); view.y=py-(py-view.y)*(k2/view.k); view.k=k2; apply(); } }
 });
