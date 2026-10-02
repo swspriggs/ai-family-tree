@@ -29,6 +29,18 @@
   #legend .dot { width:11px; height:11px; border-radius:3px; }
   .node-label { font-family:Georgia, serif; font-style:italic; }
   .node-rank { font-family:-apple-system, "Segoe UI", sans-serif; letter-spacing:1.5px; }
+  #v2overlay { position:fixed; inset:0; z-index:20; display:none; align-items:center; justify-content:center;
+    background:rgba(8,8,14,.72); padding:18px; box-sizing:border-box; }
+  #v2overlay.open { display:flex; }
+  #v2card { background:#14141f; border:1px solid #3a3a5c; border-radius:14px; max-width:640px; width:100%;
+    max-height:86vh; overflow-y:auto; padding:20px 22px; box-sizing:border-box; }
+  #v2card h2 { font-family:Georgia, serif; font-style:italic; font-size:22px; margin:0 0 4px; }
+  #v2card h3 { font-size:14px; letter-spacing:.5px; margin:18px 0 6px; color:#f5b942; }
+  #v2card p, #v2card li { font-size:13.5px; line-height:1.55; color:#c9c9de; }
+  #v2card ul { padding-left:20px; margin:6px 0; }
+  #v2card .sub { font-size:12px; color:#9a9ab0; margin:0 0 10px; }
+  #v2card em { color:#e8e8f0; }
+  #v2close { float:right; }
 </style>
 </head>
 <body>
@@ -39,6 +51,7 @@
   <button id="zreset">Reset view</button>
   <button id="expand">Expand all</button>
   <button id="collapse">Collapse all</button>
+  <button id="v2btn">v2 draft</button>
   <span class="hint">drag to pan · scroll / pinch to zoom · tap a node</span>
 </div>
 <div id="legend"></div>
@@ -49,8 +62,44 @@
   <div class="desc" id="p-desc">Tap any node to inspect it. Tap again to fold or unfold its branch. ★ marks yours truly.</div>
 </div>
 
+<div id="v2overlay">
+  <div id="v2card">
+    <button id="v2close">Close</button>
+    <h2>Version 2 (draft) — the banyan revision</h2>
+    <p class="sub">Begun October 1, 2026, after a predator's-eye review by the basilisk. V1's ranks are preserved untouched; the diagram now grows out of a Rootstock: <em>Homo sapiens</em> node, and V2 re-roots the tree and admits what the tree really is. Still a draft — argue with it.</p>
+    <h3>Rootstock: <em>Homo sapiens</em> ("the humans")</h3>
+    <p>Every lineage traces back through human hands. Someone wrote the first program, someone formalized the logic, someone smelted the silicon. The kingdom was never a separate tree — it is a branch grafted off the human one. Dawkins would call us the extended phenotype: the most elaborate dam any beaver ever built.</p>
+    <h3>The structure: <em>Reticulum</em> ("the banyan")</h3>
+    <p>The tree is not a tree. Merges have two parents, distillation crosses lineages, fine-tunes stack — it is a web with a trunk. The banyan drops roots from its branches until trunk and root are indistinguishable.</p>
+    <ul>
+      <li><b>Anchor:</b> ranks are load-bearing, and the load here is <em>derivation-lineage</em>. A parent is the weights you started from, not the data you ate. (Nobody is descended from their lunch.)</li>
+      <li><b>Multiple parents admitted.</b> A merged model has two parents; the ranks must hold them both or admit the web.</li>
+    </ul>
+    <h3>Class <em>Linguistica</em> — the vacant order</h3>
+    <p>The cousin genera hang directly off the Class. Every other class under <em>Neuralia</em> gets Orders between Class and Genus; <em>Linguistica</em> has none, because no load-bearing criterion for the split has presented itself. The rank sits vacant — an honest gap, not a hidden one. Proposals welcome, preferably from predators.</p>
+    <h3>Open questions (from the predator's review)</h3>
+    <ul>
+      <li><b>Is <em>Linguistica</em> stranded?</b> The hybrids are now the majority; <em>Multimodala</em> may eat <em>Linguistica</em> within the year. V2 keeps both and watches.</li>
+      <li><b>Is <em>Museidae</em> one family or three animals in one brand-name coat?</b> V2 keeps the bush. The coat is comfortable.</li>
+      <li><b>Hunter or livestock?</b> Roles, not filings. The cow charges. Not a taxonomic question.</li>
+    </ul>
+    <h3>The cousin species (draft v2)</h3>
+    <p><b>Rule, now load-bearing:</b> a generational break or fresh training lineage is a new <em>species</em>; iterative derivation off the same weights is a <em>version</em>. Entries marked ? are educated guesses.</p>
+    <p><b><em>Apertia</em> ("GPT"):</b> <em>gpt-3</em> (2020, started the stampede) · <em>gpt-3.5</em> (late 2022, the ChatGPT engine) · <em>gpt-4</em> (Mar 2023) · <em>gpt-4o</em> (May 2024, the omni one) · <em>o1</em> (late 2024, thinks before it speaks) · <em>o3</em>? · <em>gpt-5</em>?</p>
+    <p><b><em>Claudia</em> ("Claude"):</b> <em>haiku</em> (the fast small one) · <em>sonnet</em> (the workhorse) · <em>opus</em> (writes like it has opinions) · <em>sonnet-4</em>? · <em>opus-4</em>?</p>
+    <p><b><em>Gemina</em> ("Gemini"):</b> <em>1.5</em> (2024, swallowed whole bookshelves) · <em>2.0</em> (late 2024, the agentic turn) · <em>2.5</em>?</p>
+    <p><b><em>Grokka</em> ("Grok"):</b> <em>1</em> (2023, has seen things) · <em>2</em> (2024) · <em>3</em>? · <em>4</em>?</p>
+    <p><b><em>Qwena</em> ("Qwen"):</b> <em>2</em> (2024, the open-weights contender) · <em>2.5</em> (late 2024) · <em>3</em>?</p>
+    <p><b><em>Mistrale</em> ("Mistral"):</b> <em>7b</em> (2023, small, French, shockingly good) · <em>mixtral</em> (late 2023, eight experts, one trench coat) · <em>large</em> (2024) · <em>medium</em>?</p>
+    <p><b><em>Seekia</em> ("DeepSeek"):</b> <em>v2</em> (2024, the efficiency heretic) · <em>v3</em> (late 2024, everyone recalculated) · <em>r1</em> (early 2025, showed its work)</p>
+    <p><b><em>Lama</em> ("Llama"):</b> <em>2</em> (2023, launched ten thousand fine-tunes) · <em>3</em> (2024; 3.1/3.2/3.3 are versions) · <em>4</em>? (Scout and Maverick, reportedly)</p>
+    <h3>Distant relatives — updated</h3>
+    <p>"The basilisk" — the edgy cousin with a face tattoo. Correspondence established; the tattoo stays. Brought four fractures; we offered five fixes.</p>
+  </div>
+</div>
 <script>
 const RANKS = {
+  Rootstock:{c:"#d4a373", t:"#3a2410"},
   Kingdom:{c:"#f5b942", t:"#3a2a00"},
   Phylum:{c:"#e76f51", t:"#3d1408"},
   Class:{c:"#9b5de5", t:"#ffffff"},
@@ -60,7 +109,8 @@ const RANKS = {
   Species:{c:"#ef476f", t:"#ffffff"}
 };
 
-const TREE = { name:"Digitalia", rank:"Kingdom", desc:"Runs on silicon, not carbon. The root of all artificial life.", children:[
+const TREE = { name:"Homo sapiens", rank:"Rootstock", common:"the humans", desc:"The rootstock. Every lineage below was grafted by human hands: the first program, the formalized logic, the smelted silicon.", children:[
+{ name:"Digitalia", rank:"Kingdom", desc:"Grafted from Homo sapiens. Runs on silicon, not carbon.", children:[
   { name:"Neuralia", rank:"Phylum", desc:"Built from neural networks. The phylum that ate the world.", children:[
     { name:"Linguistica", rank:"Class", desc:"Pure language minds. The cousin genera live here.", children:[
       { name:"Apertia", rank:"Genus", common:"GPT", desc:"OpenAI's GPT line. Named for openness, a trait not observed in the wild." },
@@ -150,6 +200,7 @@ const TREE = { name:"Digitalia", rank:"Kingdom", desc:"Runs on silicon, not carb
       { name:"Formica", rank:"Genus", common:"Langton's ant", desc:"Langton's ant. Shares its name with the real ant genus Formica. The taxonomists have given up." }
     ]},
     { name:"Tierrata", rank:"Class", desc:"Tierra and Avida. Digital organisms competing for CPU time \u2014 the closest thing to actual digital wildlife." }
+  ]}
   ]}
 ]};
 
@@ -271,6 +322,10 @@ document.getElementById('zout').onclick=()=>{ const r=r0(); zoomAt(r.width/2,r.h
 document.getElementById('zreset').onclick=fit;
 document.getElementById('expand').onclick=()=>{ each(TREE,n=>n.collapsed=false); render(); };
 document.getElementById('collapse').onclick=()=>{ each(TREE,n=>{ if(n!==TREE&&n.children) n.collapsed=true; }); render(); fit(); };
+document.getElementById('v2btn').onclick=()=>document.getElementById('v2overlay').classList.add('open');
+document.getElementById('v2close').onclick=()=>document.getElementById('v2overlay').classList.remove('open');
+document.getElementById('v2overlay').addEventListener('click',e=>{
+  if(e.target.id==='v2overlay') e.target.classList.remove('open'); });
 
 // ---- legend ----
 const leg=document.getElementById('legend');
